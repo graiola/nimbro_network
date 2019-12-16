@@ -16,6 +16,10 @@ The `receiver` node uses the `ffmpeg` library for decoding. Note that the
 `avconv` framework is *not* supported. Also, most distribution packages are
 outdated, so it is best to compile ffmpeg from source.
 
+```
+sudo apt-get install yasm
+```
+
 Here is a minimal ffmpeg `configure` line that enables just the modules we need
 and installs `ffmpeg` into `/opt/ffmpeg`:
 
