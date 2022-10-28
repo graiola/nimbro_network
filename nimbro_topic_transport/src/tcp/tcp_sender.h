@@ -26,13 +26,20 @@ namespace nimbro_topic_transport
 class TCPSender
 {
 public:
+	enum CompressionType
+	{
+		COMPRESSION_NONE,
+		COMPRESSION_BZ2,
+		COMPRESSION_ZSTD,
+	};
+
 	TCPSender();
 	~TCPSender();
 
 	bool connect();
 
-	void send(const std::string& topic, int flags, const topic_tools::ShapeShifter::ConstPtr& shifter);
-	void messageCallback(const std::string& topic, int flags,
+	void send(const std::string& topic, int flags, CompressionType compression, int compressionLevel, const topic_tools::ShapeShifter::ConstPtr& shifter);
+	void messageCallback(const std::string& topic, int flags, CompressionType compression, int compressionLevel,
 		const ros::MessageEvent<topic_tools::ShapeShifter const>& shifter);
 private:
 	void updateStats();

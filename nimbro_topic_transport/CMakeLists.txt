@@ -38,22 +38,41 @@ endif()
 
 find_package(catch_ros)
 
-# If OpenFEC is available, we can enable FEC for the UDP sender
-set(DEFAULT_OPENFEC_PATH /opt/openfec_v1.4.2)
-set(OPENFEC_PATH "" CACHE PATH "Path to OpenFEC (optional)")
-if(NOT OPENFEC_PATH AND IS_DIRECTORY ${DEFAULT_OPENFEC_PATH})
-	set(OPENFEC_PATH ${DEFAULT_OPENFEC_PATH})
+include(ExternalProject)
+ExternalProject_Add(
+	openfec
+	URL http://openfec.org/files/openfec_v1_4_2.tgz
+	BUILD_COMMAND make
+	INSTALL_COMMAND "" # openfec does not provide an install target :-(
+)
+
+ExternalProject_Get_Property(openfec SOURCE_DIR)
+set(OPENFEC_PATH "${SOURCE_DIR}")
+
+add_definitions(-DWITH_OPENFEC=1)
+include_directories(${OPENFEC_PATH}/src/lib_common)
+set(OPENFEC_LIB_PATH ${OPENFEC_PATH}/bin/Release)
+set(OPENFEC_LIBRARY ${OPENFEC_LIB_PATH}/libopenfec.so)
+install(FILES
+	${OPENFEC_PATH}/bin/Release/libopenfec.so.1
+	DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
+if(NOT ";${CMAKE_INSTALL_RPATH};" MATCHES ";${OPENFEC_LIB_PATH};")
+	list(APPEND CMAKE_INSTALL_RPATH ${OPENFEC_LIB_PATH})
 endif()
-if(OPENFEC_PATH)
-	include_directories(${OPENFEC_PATH}/src/lib_common)
-	set(OPENFEC_LIBRARY ${OPENFEC_PATH}/bin/Release/libopenfec.so)
-	add_definitions(-DWITH_OPENFEC=1)
-	message(STATUS "Found and using OpenFEC at: ${OPENFEC_PATH}")
-else()
-	set(OPENFEC_LIBRARY "")
-endif()
+message(STATUS "Found and using OpenFEC at: ${OPENFEC_PATH}")
 
 find_library(BZ2_LIBRARY bz2 REQUIRED)
+
+# Check if zstd is available
+find_library(ZSTD_LIBRARY zstd)
+if(ZSTD_LIBRARY)
+	add_definitions(-DWITH_ZSTD=1)
+	set(ZSTD_LIBRARIES ${ZSTD_LIBRARY})
+else()
+	message(WARNING "Consider installing zstd for fast compression")
+	set(ZSTD_LIBRARIES "")
+endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
 add_executable(udp_sender
@@ -62,6 +81,7 @@ add_executable(udp_sender
 	src/topic_info.cpp
 )
 add_dependencies(udp_sender
+	openfec
 	${PROJECT_NAME}_generate_messages_cpp
 )
 
@@ -69,6 +89,7 @@ target_link_libraries(udp_sender
 	${catkin_LIBRARIES}
 	${BZ2_LIBRARY}
 	${OPENFEC_LIBRARY}
+	${ZSTD_LIBRARIES}
 	${config_server_LIBRARIES}
 )
 
@@ -78,6 +99,7 @@ add_executable(udp_receiver
 	src/topic_info.cpp
 )
 add_dependencies(udp_receiver
+	openfec
 	${PROJECT_NAME}_generate_messages_cpp
 )
 
@@ -85,6 +107,7 @@ target_link_libraries(udp_receiver
 	${catkin_LIBRARIES}
 	${BZ2_LIBRARY}
 	${OPENFEC_LIBRARY}
+	${ZSTD_LIBRARIES}
 )
 
 add_executable(tcp_sender
@@ -97,6 +120,7 @@ add_dependencies(tcp_sender
 target_link_libraries(tcp_sender
 	${catkin_LIBRARIES}
 	${BZ2_LIBRARY}
+	${ZSTD_LIBRARIES}
 	${config_server_LIBRARIES}
 )
 
@@ -110,6 +134,7 @@ add_dependencies(tcp_receiver
 target_link_libraries(tcp_receiver
 	${catkin_LIBRARIES}
 	${BZ2_LIBRARY}
+	${ZSTD_LIBRARIES}
 )
 
 # Tools
@@ -176,11 +201,11 @@ if(catch_ros_FOUND)
 		${catkin_LIBRARIES}
 	)
 
-	add_rostest(test/topic_transport.test ARGS protocol:=udp)
-	add_rostest(test/topic_transport.test ARGS protocol:=tcp)
+	add_rostest(test/topic_transport.test ARGS port:=5778 protocol:=udp)
+	add_rostest(test/topic_transport.test ARGS port:=5779 protocol:=tcp)
 
 	if(OPENFEC_PATH)
-		add_rostest(test/topic_transport.test ARGS protocol:=udp fec:=true)
+		add_rostest(test/topic_transport.test ARGS port:=5780 protocol:=udp fec:=true)
 	endif()
 
 	catch_add_rostest_node(test_bidirectional
