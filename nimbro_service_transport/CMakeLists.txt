@@ -117,3 +117,19 @@ if(catch_ros_FOUND)
 	add_rostest(test/test_udp.test)
 	add_rostest(test/test_tcp.test)
 endif()
+
+#install
+install(TARGETS service_server service_client udp_server udp_client
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+  PATTERN ".svn" EXCLUDE)
+
+# Install Python modules
+catkin_install_python(PROGRAMS
+  scripts/get_md5.py
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/scripts
+)  
