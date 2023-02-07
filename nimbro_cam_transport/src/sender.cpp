@@ -42,7 +42,8 @@ void handleImage(const sensor_msgs::ImageConstPtr& img)
 
 	ros::Time start = ros::Time::now();
 
-	cv_bridge::CvImageConstPtr cvImg = cv_bridge::toCvShare(img, "bgr8");
+	//cv_bridge::CvImageConstPtr cvImg = cv_bridge::toCvShare(img, "bgr8");
+	cv_bridge::CvImageConstPtr cvImg = cv_bridge::toCvShare(img, img->encoding);
 
 	int height = g_width * cvImg->image.rows / cvImg->image.cols;
 
