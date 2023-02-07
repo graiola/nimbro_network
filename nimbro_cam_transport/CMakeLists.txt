@@ -18,10 +18,6 @@ if(NOT x264_LIBRARY)
 	message(WARNING "x264 library not found, not building senders...")
 endif()
 
-#find_library(LIBAVUTIL_LIBRARY avutil HINTS /opt/ffmpeg/lib)
-#find_library(LIBAVCODEC_LIBRARY avcodec HINTS /opt/ffmpeg/lib)
-#find_library(LIBSWSCALE_LIBRARY swscale HINTS /opt/ffmpeg/lib)
-
 find_path(AVCODEC_INCLUDE_DIR libavcodec/avcodec.h)
 find_library(AVCODEC_LIBRARY avcodec)
 
@@ -37,6 +33,9 @@ find_library(AVDEVICE_LIBRARY avdevice)
 find_path(SWSCALE_INCLUDE_DIR libswscale/swscale.h)
 find_library(SWSCALE_LIBRARY swscale)
 
+if(NOT AVCODEC_LIBRARY)
+    message(WARNING "avcodec library not found, not building receivers...")
+endif()
 
 if(x264_LIBRARY)
 	add_executable(cam_sender
@@ -47,6 +46,11 @@ if(x264_LIBRARY)
 		${catkin_LIBRARIES}
 		${x264_LIBRARY}
 	)
+        #install
+        install(TARGETS cam_sender
+                ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+                LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+                RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 endif()
 
 if(AVCODEC_LIBRARY)
@@ -59,11 +63,9 @@ if(AVCODEC_LIBRARY)
 		${AVCODEC_LIBRARY}
 		${SWSCALE_LIBRARY}
 	)
+        #install
+        install(TARGETS cam_receiver
+                ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+                LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+                RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 endif()
-
-#install
-install(TARGETS cam_sender cam_receiver
-        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-
