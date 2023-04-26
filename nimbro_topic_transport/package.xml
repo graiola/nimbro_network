@@ -14,18 +14,7 @@
 	<depend>roscpp</depend>
 	<depend>topic_tools</depend>
 	<depend>rqt_gui_cpp</depend>
-	<depend>libqt4-dev</depend>
-	<depend>qt4-qmake</depend>
 	<depend>yaml-cpp</depend>
-
-	<!-- This is not a hard dependency, the package compiles without plot_msgs. -->
-	<depend>plot_msgs</depend>
-
-	<!-- This is not a hard dependency, the package compiles without config_server. -->
-	<depend>config_server</depend>
-
-	<!-- This is not a hard dependency, the package compiles without catch_ros -->
-	<depend>catch_ros</depend>
 
 	<export>
 		<rqt_gui plugin="${prefix}/rqt_plugin.xml" />
