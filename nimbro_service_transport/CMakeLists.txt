@@ -128,6 +128,9 @@ install(DIRECTORY launch/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
   PATTERN ".svn" EXCLUDE)
 
+install(FILES plugin.xml
+DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
 # Install Python modules
 catkin_install_python(PROGRAMS
   scripts/get_md5.py

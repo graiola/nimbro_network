@@ -234,3 +234,7 @@ install(DIRECTORY launch/
 install(DIRECTORY utils/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/utils
   PATTERN ".svn" EXCLUDE)
+
+install(FILES bandwidth_plugin.xml rqt_plugin.xml
+DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
