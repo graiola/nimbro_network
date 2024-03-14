@@ -41,7 +41,7 @@ find_package(catch_ros)
 include(ExternalProject)
 ExternalProject_Add(
 	openfec
-	URL http://openfec.org/files/openfec_v1_4_2.tgz
+	URL https://github.com/roc-streaming/openfec/archive/refs/tags/v1.4.2.9.tar.gz
 	BUILD_COMMAND make
 	INSTALL_COMMAND "" # openfec does not provide an install target :-(
 )
