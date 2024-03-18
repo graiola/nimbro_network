@@ -47,7 +47,7 @@ void handleImage(const sensor_msgs::CompressedImageConstPtr& img)
 
 		sensor_msgs::ImagePtr img(new sensor_msgs::Image);
 
-		img->encoding = "rgb8";
+    img->encoding = "bgr8";
 		img->data.resize(frame.width * frame.height * 3);
 		img->step = frame.width * 3;
 		img->width = frame.width;

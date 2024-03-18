@@ -39,6 +39,8 @@ Parameters:
  - `rate` (float): Input image rate limit (default: 60.0)
  - `width` (int): Input images are scaled to this width before encoding
    (default: 640)
+ - `crf` (float) Constant rate factor (CRF) is an encoding mode that adjusts the file data rate up or down to achieve a selected quality level rather than a specific data rate.
+   CRF values range from 0 to 51, with lower numbers delivering higher quality scores. (default: 30.0)
 
 receiver node
 -------------
